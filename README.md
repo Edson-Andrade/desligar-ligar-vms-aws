@@ -8,25 +8,25 @@ Entre as "opções a seguir para criar a função" será selecionada "Criar do z
 Services -> Lambda > Funções > "Nome da função"
 
 Descendo a tela poderá ser visualizado o campo "Código". Normalmente neste campo já está definida uma função básica, que deverá ser apagada. No espaço em branco será difinido o seguinte:
-
-import boto3
-region = boto3.session.Session().region_name
-ec2_client = boto3.client('ec2', region_name=region)
-
-def lambda_handler(event, context):
-    action = event.get('action')
-    InstanceIds = event.get('InstanceIds')
-    if action == 'start':
-        ec2_client.start_instances(
-            InstanceIds=InstanceIds
-            )
-        print(f'Instancia {InstanceIds} foi iniciada.')
-    elif action == 'stop':
-        ec2_client.stop_instances(
-            InstanceIds=InstanceIds
-            )
-        print(f'Instancia {InstanceIds} foi desligada.')   
-       
+> ```
+> import boto3
+> region = boto3.session.Session().region_name
+> ec2_client = boto3.client('ec2', region_name=region)
+>
+> def lambda_handler(event, context):
+>     action = event.get('action')
+>     InstanceIds = event.get('InstanceIds')
+>     if action == 'start':
+>         ec2_client.start_instances(
+>             InstanceIds=InstanceIds
+>             )
+>         print(f'Instancia {InstanceIds} foi iniciada.')
+>     elif action == 'stop':
+>         ec2_client.stop_instances(
+>             InstanceIds=InstanceIds
+>             )
+>         print(f'Instancia {InstanceIds} foi desligada.')   
+> ```       
 (Ainda na tela) Services -> Lambda > Funções > "Nome da função" 
 
 Poderá ser visualizado o campo "Configuração" e então clicar em "Permissões". Assim poderá visualizar o campo "Papel de execução", clique onde terá o seguinte: "Nome da função"-role-(########), você será direcionado para:
@@ -38,22 +38,22 @@ Ao abrir a tela "Criar política" abaixo campo "Editor visual" e no campo "Escol
 Aparecerá o Nivel de acesso" que será selecionado os campos "Lista" e "Leitura", após isso, logo abaixo clique em "recursos", desça a página e no campo "recursos" marque a opção "Todos os recursos".
 
 Suba a tela e clique na aba "JSON", neste campo apague o que estiver definido e coloque, no espaço em branco o seguinte:
-
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "VisualEditor0",
-            "Effect": "Allow",
-            "Action": [
-                "ec2:Start*",
-                "ec2:Stop*"
-            ],
-            "Resource": "arn:aws:ec2:sa-east-1:853307573551:instance/i-0b09c67043c58adec"
-        }
-    ]
-}
-
+> ```
+> {
+>     "Version": "2012-10-17",
+>     "Statement": [
+>         {
+>             "Sid": "VisualEditor0",
+>             "Effect": "Allow",
+>             "Action": [
+>                 "ec2:Start*",
+>                 "ec2:Stop*"
+>             ],
+>             "Resource": "*"
+>         }
+>     ]
+> }
+> ```
 E clique em "Revisar política" logo abaixo.
 
 Aparecerá "Revisar política" onde deverá informar o "Nome" e clique em "Criar política"
@@ -67,10 +67,10 @@ Visualize o campo "Configuração" e então clicar em "Permissões". No campo "R
 <img width="676" alt="image" src="https://user-images.githubusercontent.com/112088274/186745245-4d65a472-7620-4406-a273-d603be2b13a1.png">
 
 Onde deve ser vizualizado as permissões de "start" e "stop" na guia "Ações": 
-
-Allow: ec2:Start*
-Allow: ec2:Stop*
-
+> ```
+> Allow: ec2:Start*
+> Allow: ec2:Stop*
+> ```
 Confirmardo vá ao seguinte serviço:
 
 Services -> Amazon EventBridge > Clique em "Criar Regra" (Aqui dois eventos deverão ser criados, cada um focado em sua função "Ligar" ou "Desligar")
@@ -78,31 +78,31 @@ Services -> Amazon EventBridge > Clique em "Criar Regra" (Aqui dois eventos deve
 Defina um "Nome", Defina "Barramento de Eventos" como "default" e no "Tipo de Regra" marque "Programação" e clique em "Próximo"
 
 Em "Expressão cron" será agendado a execução para ligar ou desligar a instancia, como no exemplo a seguir:
-
-cron (00 15 ? * 5 *) Ao
-
+> ```
+> cron (00 15 ? * 5 *)
+> ```
 Em seguida aparecerá abaixo do "Cron" a programação das próxima execuções, clique em "Próximo"
 
 Nas opções de "Tipos de destino" marque o "Serviço AWS", "Selecionar um destino" selecione "Função do Lambda" e selecione a função criada anteriormente com o nome escolhido, clique em configurações adicionais, após em "Configurar entrada de destino" selecione "Constante (texto JSON)" e em "Especificar a constante JSON" informe o seguinte: 
 
 PARA LIGAR:
-
-{
-  "action": "start",
-  "InstanceIds": [
-    "ID-INSTÂNCIA"
-  ]
-}
-
+> ```
+> {
+>   "action": "start",
+>   "InstanceIds": [
+>     "ID-INSTÂNCIA"
+>   ]
+> }
+> ```
 PARA DESLIGAR:
-
-{
-  "action": "stop",
-  "InstanceIds": [
-    "ID-INSTÂNCIA"
-  ]
-}
-
+> ```
+> {
+>   "action": "stop",
+>   "InstanceIds": [
+>     "ID-INSTÂNCIA"
+>   ]
+> }
+> ```
 Em "ID-INSTÂNCIA" será o ID da Instancia alvo.
 
 Clique em "Próximo"
